@@ -1,0 +1,50 @@
+services:
+    db:
+        image: postgres
+        restart: always
+        container_name: dfl-db
+        ports:
+            - 5432:5432
+        environment:
+            POSTGRES_USER: root
+            POSTGRES_PASSWORD: mysecretpassword
+            POSTGRES_DB: local
+        volumes:
+            - pgdata:/var/lib/postgresql/data
+        networks:
+            - app-network
+    dfl:
+        env_file: .env
+        build:
+            context: .
+            dockerfile: dockerfile
+        image: dfl-image
+        container_name: dfl
+        restart: always
+        depends_on:
+            - db
+        ports:
+            - 3000:3000
+        networks:
+            - app-network
+    server:
+        image: nginx:mainline-alpine
+        container_name: server
+        restart: unless-stopped
+        ports:
+            - '80:80' # HTTP
+            - '443:443' # HTTPS
+        volumes:
+            - /etc/ssl:/etc/ssl:ro # Mount SSL certificates
+            - ./deploy/nginx:/etc/nginx/conf.d # Mount Nginx config
+        depends_on:
+            - dfl
+        networks:
+            - app-network
+
+networks:
+    app-network:
+        driver: bridge
+
+volumes:
+    pgdata:
