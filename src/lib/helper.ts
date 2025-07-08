@@ -1,5 +1,5 @@
 import { generateRandomString } from '@oslojs/crypto/random'
-import { fail } from '@sveltejs/kit';
+import { fail } from '@sveltejs/kit'
 
 const alphabet = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789'
 
