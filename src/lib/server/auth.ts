@@ -86,15 +86,4 @@ export function requireLogin(event: RequestEvent) {
 }
 
 export const user_roles = ['admin', 'user'] as const
-
-export function authorizeUser(event: RequestEvent, requiredRole: string) {
-	if (!event.locals.user) {
-		return requireLogin(event)
-	}
-
-	if (!requiredRole.includes(event.locals.user.role)) {
-		throw new Error(`Unauthorized: User does not have the required role '${requiredRole}'`)
-	}
-
-	return event.locals.user
-}
+export const admin_roles = ['admin'] as const

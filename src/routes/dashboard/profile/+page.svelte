@@ -9,6 +9,7 @@
 		ChevronDown,
 		CheckCircle,
 		AlertCircle,
+		Upload,
 	} from 'lucide-svelte'
 	import type { ActionData, PageServerData } from './$types'
 	import { invalidateAll } from '$app/navigation'
@@ -21,6 +22,9 @@
 	let permanentAddress = $state('')
 	let currentAddress = $state('')
 	let open = $state(false)
+	let profileImage = $state<File | null>(null)
+	let profileImagePreview = $state<string | null>(null)
+	let fileInputRef: HTMLInputElement
 
 	function processDigiPin(inputValue: string): string {
 		const cleanValue = inputValue.replace(/[^a-zA-Z0-9]/g, '')
@@ -63,6 +67,27 @@
 			selectedDate = data.userDetails.dateOfBirth
 		}
 	})
+
+	function handleImageUpload(event: Event) {
+		const target = event.target as HTMLInputElement
+		const file = target.files?.[0]
+		if (file) {
+			if (file.size > 5 * 1024 * 1024) {
+				message = 'Image size must be less than 5MB'
+				return
+			}
+			if (!file.type.startsWith('image/')) {
+				message = 'Please select a valid image file'
+				return
+			}		
+			profileImage = file
+			const reader = new FileReader()
+			reader.onload = (e) => {
+				profileImagePreview = e.target?.result as string
+			}
+			reader.readAsDataURL(file)
+		}
+	}
 </script>
 
 <svelte:head>
@@ -118,12 +143,27 @@
 	<div class="mx-auto max-w-4xl">
 		<div class="flex flex-col gap-4">
 			<div class="border-b py-2 md:py-4">
-				<h2 class="text-foreground mb-1 text-xl font-semibold">
-					{data.user.firstname}
-					{data.user.lastname || ''}
-				</h2>
-				<p class="text-foreground-alt text-sm">{data.user.email}</p>
-				<p class="text-muted-foreground text-xs">ID: {data.user.id}</p>
+				<div class="flex items-center gap-4">
+					{#if data.userDetails?.imageUrl}
+						<img
+							src={data.userDetails.imageUrl}
+							alt="Profile"
+							class="h-16 w-16 rounded-full object-cover border-2 border-border-input"
+						/>
+					{:else}
+						<div class="h-16 w-16 rounded-full bg-muted flex items-center justify-center">
+							<User class="h-8 w-8 text-muted-foreground" />
+						</div>
+					{/if}
+					<div>
+						<h2 class="text-foreground mb-1 text-xl font-semibold">
+							{data.user.firstname}
+							{data.user.lastname || ''}
+						</h2>
+						<p class="text-foreground-alt text-sm">{data.user.email}</p>
+						<p class="text-muted-foreground text-xs">ID: {data.user.id}</p>
+					</div>
+				</div>
 			</div>
 
 			<!-- Profile Details -->
@@ -168,7 +208,7 @@
 							</div>
 
 							{#if data.userDetails.permanentDigipin}
-								<div class="flex flex-col gap-2 border-b pb-2">
+								<div class="flex items-center justify-between border-b pb-2">
 									<span class="text-foreground text-sm font-medium"
 										>Permanent DigiPin</span
 									>
@@ -188,7 +228,7 @@
 							</div>
 
 							{#if data.userDetails.currentDigipin}
-								<div class="flex flex-col gap-2 border-b pb-2">
+								<div class="flex items-center justify-between border-b pb-2">
 									<span class="text-foreground text-sm font-medium"
 										>Current DigiPin</span
 									>
@@ -218,6 +258,7 @@
 						<form
 							method="post"
 							action="?/addDetails"
+							enctype="multipart/form-data"
 							use:enhance={() => {
 								loading = true
 								return async ({ result }) => {
@@ -234,6 +275,53 @@
 							class="space-y-4"
 							bind:this={formRef}
 						>
+							<div class="space-y-4">
+								<div class="text-center">
+									<label for="image" class="text-foreground text-sm font-medium block mb-4">
+										Upload Picture*
+									</label>
+									
+									{#if profileImagePreview}
+										<div class="relative inline-block">
+											<img
+												src={profileImagePreview}
+												alt="Profile preview"
+												class="h-32 w-32 rounded-full object-cover border-4 border-border-input"
+											/>
+										</div>
+									{:else}
+										<div class="h-32 w-32 rounded-full bg-muted flex items-center justify-center mx-auto border-4 border-dashed border-border-input">
+											<Upload class="h-8 w-8 text-muted-foreground" />
+										</div>
+									{/if}
+									
+									<div class="mt-4">
+										<input
+											type="file"
+											bind:this={fileInputRef}
+											onchange={handleImageUpload}
+											accept="image/*"
+											name="image"
+											id="image"
+											class="hidden"
+										/>
+										<Button.Root
+											type="button"
+											onclick={() => fileInputRef?.click()}
+											class="bg-muted text-foreground hover:bg-muted/80 rounded-md px-4 py-2 text-sm transition-colors duration-200"
+										>
+											{profileImagePreview ? 'Change Picture' : 'Upload Picture'}
+										</Button.Root>
+									</div>
+									<p class="text-muted-foreground text-xs mt-2">
+										Max size: 5MB. Supports all image formats.
+									</p>
+									<p class="text-foreground-alt text-xs mt-1">
+										Please upload a clear, recent photo of yourself.
+									</p>
+								</div>
+							</div>
+
 							<div class="grid gap-4 md:grid-cols-2">
 								<div class="space-y-2">
 									<label for="phone" class="text-foreground text-sm font-medium">

@@ -74,10 +74,10 @@ body {
 	--destructive: hsl(0 85% 65%);
 	--line: hsl(210 40% 10%);
 	--tertiary: hsl(195 85% 65%);
-	--success: hsl(145 85% 55%);
+	--success: hsl(145, 68%, 44%);
 	--warning: hsl(45 85% 65%);
 	--info: hsl(215 85% 70%);
-	--primary: hsl(220 85% 65%);
+	--primary: hsl(220, 50%, 47%);
 	--secondary: hsl(210 15% 35%);
 
 	/* white */
@@ -420,5 +420,30 @@ body {
 
 	.link {
 		@apply hover:text-foreground/80 focus-visible:ring-foreground focus-visible:ring-offset-background inline-flex items-center gap-1 rounded-xs font-medium underline underline-offset-4 focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:outline-hidden;
+	}
+
+	/* Line clamp utilities */
+	.line-clamp-2 {
+		display: -webkit-box;
+		-webkit-line-clamp: 2;
+		line-clamp: 2;
+		-webkit-box-orient: vertical;
+		overflow: hidden;
+	}
+
+	.line-clamp-3 {
+		display: -webkit-box;
+		-webkit-line-clamp: 3;
+		line-clamp: 3;
+		-webkit-box-orient: vertical;
+		overflow: hidden;
+	}
+
+	.line-clamp-4 {
+		display: -webkit-box;
+		-webkit-line-clamp: 4;
+		line-clamp: 4;
+		-webkit-box-orient: vertical;
+		overflow: hidden;
 	}
 }

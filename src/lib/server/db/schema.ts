@@ -21,6 +21,7 @@ export const userDetails = pgTable('user_details', {
 	currentAddress: text('current_address').notNull(),
 	dateOfBirth: date('date_of_birth').notNull(),
 	gender: text('gender').notNull(),
+	imageUrl: text('image_url').notNull(),
 })
 
 export const unverified = pgTable('unverified', {
@@ -53,8 +54,8 @@ export const application = pgTable('application', {
 	submittedAt: timestamp('submitted_at', { withTimezone: true, mode: 'date' })
 		.notNull()
 		.defaultNow(),
-	applicationName: text('application_name').notNull(),
-	applicationTable: text('application_table').notNull(),
+	courseName: text('course_name').notNull(),
+	courseTable: text('course_table').notNull(),
 })
 
 export type Session = typeof session.$inferSelect

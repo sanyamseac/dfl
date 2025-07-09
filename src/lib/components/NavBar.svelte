@@ -2,9 +2,22 @@
 	import { NavigationMenu, Dialog, DropdownMenu } from 'bits-ui'
 	import { page } from '$app/state'
 	import { Menu, X, Sun, Moon, ChevronDown } from 'lucide-svelte'
+	import { onMount } from 'svelte'
 
 	let mobileMenuOpen = $state(false)
 	let darkMode = $state(false)
+
+	onMount(() => {
+		darkMode = window.matchMedia('(prefers-color-scheme: dark)').matches
+	})
+
+	$effect(() => {
+		if (darkMode) {
+			document.documentElement.classList.add('dark')
+		} else {
+			document.documentElement.classList.remove('dark')
+		}
+	})
 
 	const navigationItems = $derived([
 		{
@@ -74,7 +87,7 @@
 						<img
 							src="/logo.png"
 							alt="DFL Logo"
-							class="h-16 object-contain dark:invert"
+							class="h-16 object-contain"
 						/>
 					</div>
 				</a>
@@ -91,12 +104,12 @@
 								{#if item.submenu}
 									<DropdownMenu.Root>
 										<DropdownMenu.Trigger
-											class={`group text-md inline-flex h-10 items-center justify-center space-x-1 rounded-md px-4 py-2 font-medium transition-colors hover:text-blue-600 focus:outline-hidden disabled:pointer-events-none disabled:opacity-50 ` +
+											class={`cursor-pointer text-nowrap group text-md inline-flex h-10 items-center justify-center space-x-1 rounded-md px-4 py-2 font-medium transition-colors hover:text-blue-600 focus:outline-hidden disabled:pointer-events-none disabled:opacity-50 ` +
 												(item.active
 													? 'bg-blue-50 text-blue-600 dark:bg-blue-900/30 dark:text-blue-300'
 													: 'text-slate-700 dark:text-slate-200')}
 										>
-											<span>{item.title}</span>
+											<span class="text-nowrap">{item.title}</span>
 											<ChevronDown
 												class="h-4 w-4 transition-transform group-data-[state=open]:rotate-180"
 											/>
@@ -118,7 +131,7 @@
 									</DropdownMenu.Root>
 								{:else}
 									<NavigationMenu.Link
-										class={`focus:text-accent-foreground data-[state=open]:shadow-mini group text-md inline-flex h-10 items-center justify-center rounded-md px-4 py-2 font-medium transition-colors hover:text-blue-600 focus:outline-hidden disabled:pointer-events-none disabled:opacity-50 ` +
+										class={`text-nowrap focus:text-accent-foreground data-[state=open]:shadow-mini group text-md inline-flex h-10 items-center justify-center rounded-md px-4 py-2 font-medium transition-colors hover:text-blue-600 focus:outline-hidden disabled:pointer-events-none disabled:opacity-50 ` +
 											(item.active
 												? 'bg-blue-50 text-blue-600 dark:bg-blue-900/30 dark:text-blue-300'
 												: 'text-slate-700 dark:text-slate-200')}

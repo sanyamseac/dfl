@@ -4,8 +4,9 @@ import type { Actions, PageServerLoad } from './$types'
 import * as table from '$lib/server/db/schema'
 import { eq } from 'drizzle-orm'
 import { redirect, fail } from '@sveltejs/kit'
-import { date } from 'drizzle-orm/mysql-core'
 import { generateId, logError } from '$lib/helper'
+import fs from 'fs/promises'
+import path from 'path'
 
 export const load: PageServerLoad = async (event) => {
 	const user = auth.requireLogin(event)
@@ -29,6 +30,7 @@ export const actions: Actions = {
 		const gender = formData.get('gender') as string
 		const digipin = formData.get('digipin') as string
 		const currentDigipin = formData.get('currentDigipin') as string
+		const profileImage = formData.get('image') as File | null
 
 		let phoneregex = /^\+?[1-9]\d{0,2}\s?\d{6,14}$/
 		if (!phone || phoneregex.test(phone) === false)
@@ -45,6 +47,17 @@ export const actions: Actions = {
 			return fail(400, { message: 'Invalid DigiPin format' })
 		if (currentDigipin && !/^\w{3}-\w{3}-\w{4}$/.test(currentDigipin))
 			return fail(400, { message: 'Invalid current DigiPin format' })
+		if (!profileImage || !(profileImage instanceof File))
+			return fail(400, { message: 'Profile image is required' })
+		if (profileImage.size > 5 * 1024 * 1024 || profileImage.size < 1 * 1024)
+			return fail(400, { message: 'Profile image size exceeds 5MB or is less than 1 KB' })
+
+		const extension = path.extname(profileImage.name).toLowerCase()
+		const imagePath = path.join('pictures', `${user.id}${extension}`)
+		try {
+			await fs.mkdir(path.dirname(imagePath), { recursive: true })
+			await fs.writeFile(imagePath, Buffer.from(await profileImage.arrayBuffer()))
+		} catch (err) {logError(err as Error)}
 
 		try {
 			await db.insert(table.userDetails).values({
@@ -55,8 +68,9 @@ export const actions: Actions = {
 				currentAddress,
 				dateOfBirth: dateOfBirth,
 				gender,
-				permanantDigipin: digipin ? digipin : null,
+				permanentDigipin: digipin ? digipin : null,
 				currentDigipin: currentDigipin ? currentDigipin : null,
+				imageUrl: `/pictures/${user.id}${extension}`,
 			})
 		} catch (err) {
 			logError(err as Error)
