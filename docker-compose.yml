@@ -25,6 +25,8 @@ services:
             - db
         ports:
             - 3000:3000
+        volumes:
+            - ./pictures:/app/pictures
         networks:
             - app-network
     server:
