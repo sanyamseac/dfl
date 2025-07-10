@@ -73,7 +73,7 @@
 					<Button.Root
 						type="submit"
 						disabled={loading}
-						class="bg-primary text-background flex w-full items-center justify-center rounded-md px-4 py-2 font-medium transition duration-200 hover:opacity-90 disabled:cursor-not-allowed"
+						class="bg-primary text-background flex w-full cursor-pointer items-center justify-center rounded-md px-4 py-2 font-medium transition duration-200 hover:opacity-90 disabled:cursor-not-allowed"
 					>
 						Login
 					</Button.Root>

@@ -19,6 +19,6 @@ export const load: PageServerLoad = async (event) => {
 		.select()
 		.from(table.application)
 		.where(eq(table.application.userId, user.id))
-	
+
 	return { user, applications }
 }

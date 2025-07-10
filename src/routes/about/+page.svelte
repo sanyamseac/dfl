@@ -34,29 +34,24 @@
 
 <div class="bg-background min-h-screen">
 	<!-- Hero Section -->
-	<section
-		class="from-primary/5 via-accent/5 to-tertiary/5 relative bg-gradient-to-br py-16 lg:py-24"
-	>
-		<div class="bg-grid-pattern absolute inset-0 opacity-5"></div>
-		<div class="relative mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+	<div class="border-border-card bg-background-alt border-b">
+		<div class="mx-auto max-w-7xl px-4 py-6 sm:px-6 sm:py-8 lg:px-8">
 			<div class="text-center">
-				<h1 class="text-foreground mb-6 text-4xl font-bold lg:text-6xl">
+				<h1 class="text-foreground text-3xl font-bold sm:text-4xl lg:text-5xl">
 					About <span class="text-primary">DFL</span>
 				</h1>
-				<p
-					class="text-foreground-alt mx-auto max-w-3xl text-xl leading-relaxed lg:text-2xl"
-				>
+				<p class="text-foreground-alt mt-3 text-base sm:mt-4 sm:text-lg">
 					Learn more about the Division of Flexible Learning at IIIT Hyderabad
 				</p>
 			</div>
 		</div>
-	</section>
+	</div>
 
 	<!-- Main Content -->
 	<div class="mx-auto max-w-7xl px-4 py-16 sm:px-6 lg:px-8">
 		<div class="lg:flex lg:gap-12">
 			<!-- Navigation Sidebar -->
-			<div class="mb-8 lg:mb-0 lg:w-64">
+			<!-- <div class="mb-8 lg:mb-0 lg:w-64">
 				<div class="sticky top-8">
 					<nav
 						class="bg-background-alt border-border-card shadow-card rounded-xl border p-6"
@@ -99,7 +94,7 @@
 						</ul>
 					</nav>
 				</div>
-			</div>
+			</div> -->
 
 			<!-- Content Area -->
 			<div class="flex-1 space-y-16">
@@ -114,7 +109,7 @@
 
 						<div class="mb-8">
 							<img
-								src="assets/img/campus1.jpeg"
+								src="campus1.jpg"
 								alt="Division Overview"
 								class="h-64 w-full rounded-xl object-cover shadow-lg lg:h-80"
 							/>
@@ -180,7 +175,7 @@
 				</section>
 
 				<!-- Director & DFL Team Section -->
-				<section id="director-team" class="scroll-section">
+				<!-- <section id="director-team" class="scroll-section">
 					<div
 						class="bg-background-alt border-border-card shadow-card rounded-2xl border p-8"
 					>
@@ -188,7 +183,6 @@
 							Director & DFL Team
 						</h2>
 
-						<!-- Director Profile -->
 						<div class="mb-16">
 							<div
 								class="from-primary/5 to-tertiary/5 rounded-2xl bg-gradient-to-r p-8"
@@ -265,11 +259,9 @@
 							</div>
 						</div>
 
-						<!-- DFL Team Grid -->
 						<div>
 							<h3 class="text-foreground mb-8 text-2xl font-bold">DFL Team</h3>
 							<div class="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
-								<!-- Mr. K. Sudheendra -->
 								<div
 									class="bg-background border-border-card shadow-card rounded-xl border p-6 transition-shadow duration-300 hover:shadow-lg"
 								>
@@ -299,7 +291,6 @@
 									</div>
 								</div>
 
-								<!-- Team Member Template for Others -->
 								{#each [{ name: '[Name Placeholder]', role: 'Accounts Assistant', email: 'accounts', desc: 'Manages financial records, payments, and budgeting within the DFL division.' }, { name: '[Name Placeholder]', role: 'Administration Assistant', email: 'admin', desc: 'Supports administrative operations including scheduling and documentation.' }, { name: '[Name Placeholder]', role: 'Admissions Assistant', email: 'admissions', desc: 'Manages admissions process and communication with prospective students.' }, { name: '[Name Placeholder]', role: 'Course Coordinator', email: 'courses', desc: 'Coordinates course logistics and ensures timely delivery of educational content.' }, { name: '[Name Placeholder]', role: 'Operations Manager', email: 'operations', desc: 'Oversees overall operations including planning and monitoring workflows.' }, { name: '[Name Placeholder]', role: 'Software Engineer', email: 'software', desc: "Develops and maintains software systems supporting DFL's learning platforms." }, { name: '[Name Placeholder]', role: 'Technical Assistant', email: 'tech', desc: 'Provides technical support for hardware, software, and online platforms.' }, { name: '[Name Placeholder]', role: 'Web Developer', email: 'web', desc: 'Designs and maintains DFL website and web-based tools.' }] as member}
 									<div
 										class="bg-background border-border-card shadow-card rounded-xl border p-6 transition-shadow duration-300 hover:shadow-lg"
@@ -331,7 +322,6 @@
 					</div>
 				</section>
 
-				<!-- Leadership/Coordination Committee Section -->
 				<section id="leadership" class="scroll-section">
 					<div
 						class="bg-background-alt border-border-card shadow-card rounded-2xl border p-8"
@@ -380,7 +370,7 @@
 							{/each}
 						</div>
 					</div>
-				</section>
+				</section> -->
 			</div>
 		</div>
 	</div>

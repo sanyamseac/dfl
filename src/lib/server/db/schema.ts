@@ -13,12 +13,11 @@ export const userDetails = pgTable('user_details', {
 	id: text('id').primaryKey(),
 	userId: text('user_id')
 		.notNull()
+		.unique()
 		.references(() => user.id),
 	phone: text('phone').notNull(),
-	permanentAddress: text('permanent_address').notNull(),
-	permanentDigipin: text('permanent_digipin'),
-	currentDigipin: text('current_digipin'),
-	currentAddress: text('current_address').notNull(),
+	idType: text('id_type').notNull(),
+	idNumber: text('id_number').notNull(),
 	dateOfBirth: date('date_of_birth').notNull(),
 	gender: text('gender').notNull(),
 	imageUrl: text('image_url').notNull(),

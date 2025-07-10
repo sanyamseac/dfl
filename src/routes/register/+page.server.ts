@@ -16,10 +16,10 @@ export const actions: Actions = {
 	register: async (event) => {
 		if (event.locals.user) return redirect(302, '/dashboard')
 		const formData = await event.request.formData()
-		const email = formData.get('email') as string
-		const password = formData.get('password') as string
-		const firstname = formData.get('firstname') as string
-		const lastname = formData.get('lastname') as string
+		const email = (formData.get('email') as string) || null
+		const password = (formData.get('password') as string) || null
+		const firstname = (formData.get('firstname') as string) || null
+		const lastname = (formData.get('lastname') as string) || null
 
 		if (!email || !validateEmail(email)) return fail(400, { message: 'Invalid Email' })
 		if (!password || !validatePassword(password))

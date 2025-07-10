@@ -8,7 +8,14 @@
 	let darkMode = $state(false)
 
 	onMount(() => {
-		darkMode = window.matchMedia('(prefers-color-scheme: dark)').matches
+		const stored = localStorage.getItem('darkMode')
+		if (!stored) darkMode = window.matchMedia('(prefers-color-scheme: dark)').matches
+		else darkMode = stored === 'true'
+		if (darkMode) {
+			document.documentElement.classList.add('dark')
+		} else {
+			document.documentElement.classList.remove('dark')
+		}
 	})
 
 	$effect(() => {
@@ -17,6 +24,8 @@
 		} else {
 			document.documentElement.classList.remove('dark')
 		}
+		localStorage.setItem('darkMode', darkMode ? 'true' : 'false')
+		console.log('Dark mode set to:', darkMode)
 	})
 
 	const navigationItems = $derived([
@@ -84,11 +93,7 @@
 							alt="IIIT Hyderabad Logo"
 							class="h-20 object-contain dark:invert"
 						/>
-						<img
-							src="/logo.png"
-							alt="DFL Logo"
-							class="h-16 object-contain"
-						/>
+						<img src="/logo.png" alt="DFL Logo" class="h-16 object-contain" />
 					</div>
 				</a>
 			</div>
@@ -104,7 +109,7 @@
 								{#if item.submenu}
 									<DropdownMenu.Root>
 										<DropdownMenu.Trigger
-											class={`cursor-pointer text-nowrap group text-md inline-flex h-10 items-center justify-center space-x-1 rounded-md px-4 py-2 font-medium transition-colors hover:text-blue-600 focus:outline-hidden disabled:pointer-events-none disabled:opacity-50 ` +
+											class={`group text-md inline-flex h-10 cursor-pointer items-center justify-center space-x-1 rounded-md px-4 py-2 font-medium text-nowrap transition-colors hover:text-blue-600 focus:outline-hidden disabled:pointer-events-none disabled:opacity-50 ` +
 												(item.active
 													? 'bg-blue-50 text-blue-600 dark:bg-blue-900/30 dark:text-blue-300'
 													: 'text-slate-700 dark:text-slate-200')}
@@ -131,7 +136,7 @@
 									</DropdownMenu.Root>
 								{:else}
 									<NavigationMenu.Link
-										class={`text-nowrap focus:text-accent-foreground data-[state=open]:shadow-mini group text-md inline-flex h-10 items-center justify-center rounded-md px-4 py-2 font-medium transition-colors hover:text-blue-600 focus:outline-hidden disabled:pointer-events-none disabled:opacity-50 ` +
+										class={`focus:text-accent-foreground data-[state=open]:shadow-mini group text-md inline-flex h-10 items-center justify-center rounded-md px-4 py-2 font-medium text-nowrap transition-colors hover:text-blue-600 focus:outline-hidden disabled:pointer-events-none disabled:opacity-50 ` +
 											(item.active
 												? 'bg-blue-50 text-blue-600 dark:bg-blue-900/30 dark:text-blue-300'
 												: 'text-slate-700 dark:text-slate-200')}

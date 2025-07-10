@@ -1,72 +1,26 @@
 <script lang="ts">
 	import { enhance } from '$app/forms'
 	import { Button, Select } from 'bits-ui'
-	import {
-		User,
-		Phone,
-		MapPin,
-		Calendar,
-		ChevronDown,
-		CheckCircle,
-		AlertCircle,
-		Upload,
-	} from 'lucide-svelte'
+	import { User, ChevronDown, AlertCircle, Upload, FileText } from 'lucide-svelte'
 	import type { ActionData, PageServerData } from './$types'
 	import { invalidateAll } from '$app/navigation'
-	import { PinInput, REGEXP_ONLY_DIGITS_AND_CHARS, type PinInputRootSnippetProps } from 'bits-ui'
-	import cn from 'clsx'
 	import ConfirmDialog from '$lib/components/ConfirmDialog.svelte'
 
-	let value = $state('')
-	let currentDigiPin = $state('')
-	let permanentAddress = $state('')
-	let currentAddress = $state('')
 	let open = $state(false)
 	let profileImage = $state<File | null>(null)
 	let profileImagePreview = $state<string | null>(null)
 	let fileInputRef: HTMLInputElement
 
-	function processDigiPin(inputValue: string): string {
-		const cleanValue = inputValue.replace(/[^a-zA-Z0-9]/g, '')
-		return cleanValue.slice(0, 10)
-	}
-
-	function formatDigiPin(cleanValue: string): string {
-		if (cleanValue.length <= 3) return cleanValue
-		if (cleanValue.length <= 6) return `${cleanValue.slice(0, 3)}-${cleanValue.slice(3)}`
-		return `${cleanValue.slice(0, 3)}-${cleanValue.slice(3, 6)}-${cleanValue.slice(6)}`
-	}
-
-	function copyPermanentToCurrent() {
-		currentAddress = permanentAddress
-		currentDigiPin = value
-	}
-
-	function handlePinPaste(event: ClipboardEvent, pinType: 'permanent' | 'current') {
-		event.preventDefault()
-		const pastedText = event.clipboardData?.getData('text') || ''
-		const processedValue = processDigiPin(pastedText)
-		if (pinType === 'permanent') value = processedValue
-		else currentDigiPin = processedValue
-	}
-
-	type CellProps = PinInputRootSnippetProps['cells'][0]
-
 	let { data }: { data: PageServerData } = $props()
 	let message = $state<string | null>(null)
 	let selectedGender = $state('')
-	let selectedDate = $state('')
+	let selectedIdType = $state('')
 	let loading = $state(false)
 	let formRef: HTMLFormElement
+
 	function parseDateFromDB(dateString: string): Date {
 		return new Date(dateString + 'T00:00:00')
 	}
-
-	$effect(() => {
-		if (data.userDetails) {
-			selectedDate = data.userDetails.dateOfBirth
-		}
-	})
 
 	function handleImageUpload(event: Event) {
 		const target = event.target as HTMLInputElement
@@ -79,13 +33,28 @@
 			if (!file.type.startsWith('image/')) {
 				message = 'Please select a valid image file'
 				return
-			}		
+			}
 			profileImage = file
 			const reader = new FileReader()
 			reader.onload = (e) => {
 				profileImagePreview = e.target?.result as string
 			}
 			reader.readAsDataURL(file)
+		}
+	}
+
+	function handleIdDocumentUpload(event: Event) {
+		const target = event.target as HTMLInputElement
+		const file = target.files?.[0]
+		if (file) {
+			if (file.size > 5 * 1024 * 1024) {
+				message = 'ID document size must be less than 5MB'
+				return
+			}
+			if (file.type !== 'application/pdf') {
+				message = 'Please select a valid PDF file'
+				return
+			}
 		}
 	}
 </script>
@@ -95,44 +64,12 @@
 	<meta name="description" content="Manage your profile information" />
 </svelte:head>
 
-{#snippet Cell(cell: CellProps)}
-	<PinInput.Cell
-		{cell}
-		class={cn(
-			'focus-override',
-			'relative h-8 w-6 text-lg md:h-10 md:w-8',
-			'flex items-center justify-center',
-			'transition-all duration-75',
-			'border-foreground/20 border-y border-r first:rounded-l-md first:border-l last:rounded-r-md',
-			'text-foreground group-focus-within/pininput:border-primary group-hover/pininput:border-primary',
-			'outline-0',
-			'data-active:outline-primary data-active:outline-1',
-		)}
-	>
-		{#if cell.char !== null}
-			<div>
-				{cell.char}
-			</div>
-		{/if}
-		{#if cell.hasFakeCaret}
-			<div
-				class="animate-caret-blink pointer-events-none absolute inset-0 flex items-center justify-center"
-			>
-				<div class="h-6 w-px bg-white"></div>
-			</div>
-		{/if}
-	</PinInput.Cell>
-{/snippet}
-
 <ConfirmDialog
 	{open}
 	title="Confirm Profile Update"
 	description="You will not be able to edit these details. Are you sure you want to save these profile details?"
 	onClose={() => (open = false)}
-	onConfirm={() => {
-		formRef.requestSubmit()
-		open = false
-	}}
+	onConfirm={() => formRef.requestSubmit()}
 	confirmText="Save Changes"
 	cancelText="Cancel"
 	variant="primary"
@@ -148,11 +85,13 @@
 						<img
 							src={data.userDetails.imageUrl}
 							alt="Profile"
-							class="h-16 w-16 rounded-full object-cover border-2 border-border-input"
+							class="border-border-input h-16 w-16 rounded-full border-2 object-cover"
 						/>
 					{:else}
-						<div class="h-16 w-16 rounded-full bg-muted flex items-center justify-center">
-							<User class="h-8 w-8 text-muted-foreground" />
+						<div
+							class="bg-muted flex h-16 w-16 items-center justify-center rounded-full"
+						>
+							<User class="text-muted-foreground h-8 w-8" />
 						</div>
 					{/if}
 					<div>
@@ -184,11 +123,11 @@
 								<span class="text-foreground text-sm font-medium"
 									>Date of Birth</span
 								>
-								<span class="text-foreground"
-									>{parseDateFromDB(
+								<span class="text-foreground">
+									{parseDateFromDB(
 										data.userDetails.dateOfBirth,
-									).toLocaleDateString()}</span
-								>
+									).toLocaleDateString()}
+								</span>
 							</div>
 
 							<div class="flex items-center justify-between border-b pb-2">
@@ -198,45 +137,28 @@
 								>
 							</div>
 
-							<div class="flex flex-col gap-2 border-b pb-2">
-								<span class="text-foreground text-sm font-medium"
-									>Permanent Address</span
-								>
-								<span class="text-foreground whitespace-pre"
-									>{data.userDetails.permanentAddress}</span
-								>
+							<div class="flex items-center justify-between border-b pb-2">
+								<span class="text-foreground text-sm font-medium">ID Type</span>
+								<span class="text-foreground capitalize">
+									{data.userDetails.idType}
+								</span>
 							</div>
 
-							{#if data.userDetails.permanentDigipin}
-								<div class="flex items-center justify-between border-b pb-2">
-									<span class="text-foreground text-sm font-medium"
-										>Permanent DigiPin</span
-									>
-									<span class="text-foreground whitespace-pre"
-										>{data.userDetails.permanentDigipin}</span
-									>
-								</div>
-							{/if}
-
-							<div class="flex flex-col gap-2 border-b pb-2">
-								<span class="text-foreground text-sm font-medium"
-									>Current Address</span
-								>
-								<span class="text-foreground whitespace-pre"
-									>{data.userDetails.currentAddress}</span
-								>
+							<div class="flex items-center justify-between border-b pb-2">
+								<span class="text-foreground text-sm font-medium">ID Code</span>
+								<span class="text-foreground">{data.userDetails.idNumber}</span>
 							</div>
 
-							{#if data.userDetails.currentDigipin}
-								<div class="flex items-center justify-between border-b pb-2">
-									<span class="text-foreground text-sm font-medium"
-										>Current DigiPin</span
-									>
-									<span class="text-foreground whitespace-pre"
-										>{data.userDetails.currentDigipin}</span
-									>
-								</div>
-							{/if}
+							<div class="flex items-center justify-between border-b pb-2">
+								<span class="text-foreground text-sm font-medium">ID Document</span>
+								<a
+									href={`/content/userIdFiles/${data.user.id}.pdf`}
+									target="_blank"
+									class="text-primary hover:text-primary/80 text-sm underline"
+								>
+									View Document
+								</a>
+							</div>
 						</div>
 					</div>
 				{:else}
@@ -259,7 +181,12 @@
 							method="post"
 							action="?/addDetails"
 							enctype="multipart/form-data"
-							use:enhance={() => {
+							use:enhance={(e) => {
+								if (!open) {
+									e.cancel()
+									open = true
+									return
+								}
 								loading = true
 								return async ({ result }) => {
 									if (result.type === 'success') {
@@ -270,6 +197,7 @@
 											'An error occurred while saving your profile details.'
 									}
 									loading = false
+									open = false
 								}
 							}}
 							class="space-y-4"
@@ -277,25 +205,27 @@
 						>
 							<div class="space-y-4">
 								<div class="text-center">
-									<label for="image" class="text-foreground text-sm font-medium block mb-4">
+									<label
+										for="image"
+										class="text-foreground mb-4 block text-sm font-medium"
+									>
 										Upload Picture*
 									</label>
-									
-									{#if profileImagePreview}
-										<div class="relative inline-block">
+
+									<div class="relative mx-auto inline-block">
+										{#if profileImagePreview}
 											<img
 												src={profileImagePreview}
 												alt="Profile preview"
-												class="h-32 w-32 rounded-full object-cover border-4 border-border-input"
+												class="border-border-input h-32 w-32 rounded-full border-4 object-cover"
 											/>
-										</div>
-									{:else}
-										<div class="h-32 w-32 rounded-full bg-muted flex items-center justify-center mx-auto border-4 border-dashed border-border-input">
-											<Upload class="h-8 w-8 text-muted-foreground" />
-										</div>
-									{/if}
-									
-									<div class="mt-4">
+										{:else}
+											<div
+												class="bg-muted border-border-input mx-auto flex h-32 w-32 items-center justify-center rounded-full border-4 border-dashed"
+											>
+												<Upload class="text-muted-foreground h-8 w-8" />
+											</div>
+										{/if}
 										<input
 											type="file"
 											bind:this={fileInputRef}
@@ -303,20 +233,15 @@
 											accept="image/*"
 											name="image"
 											id="image"
-											class="hidden"
+											class="absolute inset-0 z-10 h-full w-full cursor-pointer opacity-0"
+											required
 										/>
-										<Button.Root
-											type="button"
-											onclick={() => fileInputRef?.click()}
-											class="bg-muted text-foreground hover:bg-muted/80 rounded-md px-4 py-2 text-sm transition-colors duration-200"
-										>
-											{profileImagePreview ? 'Change Picture' : 'Upload Picture'}
-										</Button.Root>
 									</div>
-									<p class="text-muted-foreground text-xs mt-2">
+
+									<p class="text-muted-foreground mt-2 text-xs">
 										Max size: 5MB. Supports all image formats.
 									</p>
-									<p class="text-foreground-alt text-xs mt-1">
+									<p class="text-foreground-alt mt-1 text-xs">
 										Please upload a clear, recent photo of yourself.
 									</p>
 								</div>
@@ -354,7 +279,6 @@
 										type="date"
 										id="dateofbirth"
 										name="dateOfBirth"
-										bind:value={selectedDate}
 										required
 										max={new Date().toISOString().split('T')[0]}
 										class="focus:ring-primary bg-background-alt border-border-input text-foreground w-full rounded-md border px-3 py-1 transition duration-200 focus:ring-2 focus:outline-none"
@@ -405,186 +329,156 @@
 										/>
 									</Select.Root>
 								</div>
-							</div>
 
-							<div class="space-y-4">
-								<div>
+								<div class="space-y-2">
+									<label for="idType" class="text-foreground text-sm font-medium">
+										ID Type*
+									</label>
+									<Select.Root type="single" bind:value={selectedIdType}>
+										<Select.Trigger
+											class="focus:ring-primary bg-background-alt border-border-input text-foreground data-[state=open]:ring-primary flex w-full items-center justify-between rounded-md border px-3 py-2 capitalize transition duration-200 focus:ring-2 focus:outline-none data-[state=open]:ring-2 {selectedIdType
+												? ''
+												: 'text-muted-foreground'}"
+										>
+											{selectedIdType || 'Select ID type'}
+											<ChevronDown
+												class="text-muted-foreground h-4 w-4 transition-transform duration-200 data-[state=open]:rotate-180"
+											/>
+										</Select.Trigger>
+										<Select.Content
+											class="border-border-card bg-background-alt text-foreground shadow-popover data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95 data-[side=top]:slide-in-from-bottom-2 z-50 h-max max-h-[var(--bits-select-content-available-height)] w-[var(--bits-select-anchor-width)] min-w-[var(--bits-select-anchor-width)] overflow-hidden rounded-md rounded-xl border px-1 py-3 outline-hidden select-none data-[side=top]:-translate-y-1"
+										>
+											<Select.Item
+												value="aadhar"
+												class="focus:bg-muted focus:text-foreground hover:bg-muted relative flex w-full cursor-default items-center rounded-sm py-1 pr-2 pl-3 text-sm outline-none select-none data-[disabled]:pointer-events-none data-[disabled]:opacity-50"
+											>
+												Aadhar
+											</Select.Item>
+											<Select.Item
+												value="passport"
+												class="focus:bg-muted focus:text-foreground hover:bg-muted relative flex w-full cursor-default items-center rounded-sm py-1 pr-2 pl-3 text-sm outline-none select-none data-[disabled]:pointer-events-none data-[disabled]:opacity-50"
+											>
+												Passport
+											</Select.Item>
+											<Select.Item
+												value="others"
+												class="focus:bg-muted focus:text-foreground hover:bg-muted relative flex w-full cursor-default items-center rounded-sm py-1 pr-2 pl-3 text-sm outline-none select-none data-[disabled]:pointer-events-none data-[disabled]:opacity-50"
+											>
+												Others
+											</Select.Item>
+										</Select.Content>
+									</Select.Root>
+								</div>
+
+								<div
+									class="space-y-2 {selectedIdType === 'others' ? '' : 'hidden'}"
+								>
 									<label
-										for="permanentAddress"
+										for="customIdType"
 										class="text-foreground text-sm font-medium"
 									>
-										Permanent Address*
+										Specify ID Type*
 									</label>
-									<textarea
-										id="permanentAddress"
-										name="permanentAddress"
-										bind:value={permanentAddress}
+									<input
+										type="text"
+										id="idType"
+										name="idType"
+										value={selectedIdType === 'others' ? '' : selectedIdType}
 										required
-										rows="3"
-										placeholder="Enter your permanent address including city, state, and pincode"
-										class="focus:ring-primary bg-background-alt border-border-input text-foreground placeholder:text-muted-foreground w-full resize-none rounded-md border px-3 py-1 transition duration-200 focus:ring-2 focus:outline-none"
-									></textarea>
-
-									<div class="mt-2">
-										<label
-											for="digipin"
-											class="text-foreground mb-2 block text-sm font-medium"
-										>
-											DigiPin (Optional)
-										</label>
-										<PinInput.Root
-											bind:value
-											onpaste={(e) => handlePinPaste(e, 'permanent')}
-											class="group/pininput text-foreground flex items-center has-disabled:opacity-30"
-											maxlength={10}
-											pattern={REGEXP_ONLY_DIGITS_AND_CHARS}
-											inputmode="text"
-										>
-											{#snippet children({ cells })}
-												<div class="flex">
-													{#each cells.slice(0, 3) as cell, i (i)}
-														{@render Cell(cell)}
-													{/each}
-												</div>
-
-												<div class="flex w-6 items-center justify-center">
-													<div
-														class="bg-foreground h-1 w-2 rounded-full"
-													></div>
-												</div>
-
-												<div class="flex">
-													{#each cells.slice(3, 6) as cell, i (i)}
-														{@render Cell(cell)}
-													{/each}
-												</div>
-
-												<div class="flex w-6 items-center justify-center">
-													<div
-														class="bg-foreground h-1 w-2 rounded-full"
-													></div>
-												</div>
-
-												<div class="flex">
-													{#each cells.slice(6, 10) as cell, i (i)}
-														{@render Cell(cell)}
-													{/each}
-												</div>
-											{/snippet}
-										</PinInput.Root>
-										<input
-											type="hidden"
-											name="digipin"
-											value={formatDigiPin(value)}
-										/>
-										<span class="text-muted-foreground text-xs">
-											Find your digipin <a
-												href="https://dac.indiapost.gov.in/mydigipin"
-												class="cursor-pointer underline"
-											>
-												here
-											</a>
-										</span>
-									</div>
-
-									<span class="text-muted-foreground text-xs">
-										Please provide your complete permanent address for
-										verification purposes.
-									</span>
+										placeholder="Enter ID type (e.g., Voter ID, Driving License)"
+										class="focus:ring-primary bg-background-alt border-border-input text-foreground placeholder:text-muted-foreground w-full rounded-md border px-3 py-2 transition duration-200 focus:ring-2 focus:outline-none"
+									/>
 								</div>
 
-								<div>
-									<div class="mb-2 flex items-center justify-between">
-										<label
-											for="currentAddress"
-											class="text-foreground text-sm font-medium"
-										>
-											Current Address*
-										</label>
-										<Button.Root
-											type="button"
-											onclick={copyPermanentToCurrent}
-											class="bg-muted text-foreground hover:bg-muted/80 rounded-md px-2 py-1 text-xs transition-colors duration-200"
-										>
-											Same as permanent
-										</Button.Root>
-									</div>
-									<textarea
-										id="currentAddress"
-										name="currentAddress"
-										bind:value={currentAddress}
+								<div class="space-y-2">
+									<label
+										for="idNumber"
+										class="text-foreground text-sm font-medium"
+									>
+										ID Code/Number*
+									</label>
+									<input
+										type="text"
+										id="idNumber"
+										name="idNumber"
 										required
-										rows="3"
-										placeholder="Enter your current address"
-										class="dark-scroll focus:ring-primary bg-background-alt border-border-input text-foreground placeholder:text-muted-foreground w-full resize-none rounded-md border px-3 py-2 transition duration-200 focus:ring-2 focus:outline-none"
-									></textarea>
+										placeholder="Enter your ID number"
+										class="focus:ring-primary bg-background-alt border-border-input text-foreground placeholder:text-muted-foreground w-full rounded-md border px-3 py-2 transition duration-200 focus:ring-2 focus:outline-none"
+									/>
+								</div>
 
-									<div class="mt-2">
-										<label
-											for="currentDigipin"
-											class="text-foreground mb-2 block text-sm font-medium"
-										>
-											DigiPin (Optional)
-										</label>
-										<PinInput.Root
-											bind:value={currentDigiPin}
-											onpaste={(e) => handlePinPaste(e, 'current')}
-											class="group/pininput text-foreground flex items-center has-disabled:opacity-30"
-											maxlength={10}
-											pattern={REGEXP_ONLY_DIGITS_AND_CHARS}
-											inputmode="text"
-										>
-											{#snippet children({ cells })}
-												<div class="flex">
-													{#each cells.slice(0, 3) as cell, i (i)}
-														{@render Cell(cell)}
-													{/each}
-												</div>
+								<div class="space-y-2 md:col-span-2">
+									<label
+										for="idDocument"
+										class="text-foreground text-sm font-medium"
+									>
+										Upload ID Document (PDF)*
+									</label>
 
-												<div class="flex w-6 items-center justify-center">
-													<div
-														class="bg-foreground h-1 w-2 rounded-full"
-													></div>
+									<div class="flex flex-col gap-2">
+										<div class="relative">
+											<input
+												type="file"
+												onchange={handleIdDocumentUpload}
+												accept="application/pdf"
+												name="idDocument"
+												id="idDocument"
+												class="absolute inset-0 z-10 h-full w-full cursor-pointer opacity-0"
+												required
+											/>
+											<div
+												class="bg-background-alt border-border-input hover:border-primary focus-within:ring-primary text-foreground flex items-center justify-between rounded-md border px-4 py-3 transition-all duration-200 focus-within:ring-2"
+											>
+												<div class="flex items-center gap-3">
+													<FileText
+														class="text-muted-foreground h-5 w-5"
+													/>
+													<span
+														class="text-muted-foreground text-sm"
+														id="file-selected"
+													>
+														No file selected
+													</span>
 												</div>
-
-												<div class="flex">
-													{#each cells.slice(3, 6) as cell, i (i)}
-														{@render Cell(cell)}
-													{/each}
-												</div>
-
-												<div class="flex w-6 items-center justify-center">
-													<div
-														class="bg-foreground h-1 w-2 rounded-full"
-													></div>
-												</div>
-
-												<div class="flex">
-													{#each cells.slice(6, 10) as cell, i (i)}
-														{@render Cell(cell)}
-													{/each}
-												</div>
-											{/snippet}
-										</PinInput.Root>
-										<input
-											type="hidden"
-											name="currentDigipin"
-											value={formatDigiPin(currentDigiPin)}
-										/>
+												<span
+													class="bg-muted text-foreground rounded-md px-3 py-1.5 text-xs font-medium"
+												>
+													Browse
+												</span>
+											</div>
+										</div>
+										<script>
+											document
+												.getElementById('idDocument')
+												?.addEventListener('change', (e) => {
+													const fileName =
+														e.target.files?.[0]?.name ||
+														'No file selected'
+													document.getElementById(
+														'file-selected',
+													).textContent = fileName
+												})
+										</script>
 									</div>
+									<p class="text-muted-foreground mt-2 text-xs">
+										Max size: 5MB. PDF format only.
+									</p>
+									<p class="text-foreground-alt mt-1 text-xs">
+										Please upload a clear scan or photo of your ID document.
+									</p>
 								</div>
 							</div>
+							<div class="pt-6">
+								<Button.Root
+									type="submit"
+									disabled={loading}
+									class="bg-primary shadow-btn inline-flex w-full items-center justify-center gap-2 rounded-md px-6 py-2 font-medium text-white transition-all duration-200 hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-50 md:w-auto"
+								>
+									{loading ? 'Saving Profile...' : 'Save Profile Details'}
+								</Button.Root>
+							</div>
 						</form>
-						<div class="pt-6">
-							<Button.Root
-								type="submit"
-								disabled={loading}
-								onclick={() => (open = true)}
-								class="bg-primary text-background shadow-btn inline-flex w-full items-center justify-center gap-2 rounded-md px-6 py-2 font-medium transition-all duration-200 hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-50 md:w-auto"
-							>
-								{loading ? 'Saving Profile...' : 'Save Profile Details'}
-							</Button.Root>
-						</div>
+
 						{#if message}
 							<span class="text-destructive mb-4 block text-sm">
 								{message}
@@ -605,36 +499,6 @@
 </div>
 
 <style>
-	/* Dark mode compatible scrollbar */
-	.dark-scroll {
-		scrollbar-width: thin;
-		scrollbar-color: hsl(var(--muted-foreground)) hsl(var(--background-alt));
-	}
-
-	.dark-scroll::-webkit-scrollbar {
-		width: 8px;
-		height: 8px;
-	}
-
-	.dark-scroll::-webkit-scrollbar-track {
-		background: hsl(var(--background-alt));
-		border-radius: 4px;
-	}
-
-	.dark-scroll::-webkit-scrollbar-thumb {
-		background: hsl(var(--muted-foreground));
-		border-radius: 4px;
-		border: 1px solid hsl(var(--background-alt));
-	}
-
-	.dark-scroll::-webkit-scrollbar-thumb:hover {
-		background: hsl(var(--foreground) / 0.6);
-	}
-
-	.dark-scroll::-webkit-scrollbar-corner {
-		background: hsl(var(--background-alt));
-	}
-
 	input[type='date']::-webkit-calendar-picker-indicator {
 		background-color: var(--primary);
 		border-radius: 0.25rem;

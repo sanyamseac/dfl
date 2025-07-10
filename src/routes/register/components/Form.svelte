@@ -11,9 +11,9 @@
 	})
 
 	let passwordValid = $derived(validatePassword(password))
-	let emaiValid = $derived(validateEmail(email))
+	let emailValid = $derived(validateEmail(email))
 	let passwordsMatch = $derived(password === confirmPassword && confirmPassword !== '')
-	let formValid = $derived(passwordValid.isValid && passwordsMatch && emaiValid)
+	let formValid = $derived(passwordValid.isValid && passwordsMatch && emailValid)
 
 	function validatePassword(pwd: string) {
 		const hasMinLength = pwd.length >= 8
@@ -102,10 +102,8 @@
 			bind:value={email}
 			class="focus:ring-primary bg-background-alt border-border-input text-foreground placeholder:text-muted-foreground w-full rounded-md border px-3 py-2 transition duration-200 focus:ring-2 focus:outline-none"
 		/>
-		{#if email && !emaiValid}
+		{#if email && !emailValid}
 			<p class="text-destructive mt-1 text-xs">Invalid email format</p>
-		{:else if email && emaiValid}
-			<p class="text-success mt-1 text-xs">✓ Valid email</p>
 		{/if}
 	</div>
 
@@ -189,7 +187,7 @@
 			type="submit"
 			disabled={!formValid}
 			class="flex w-full items-center justify-center rounded-md px-4 py-2 font-medium transition duration-200 disabled:cursor-not-allowed {formValid
-				? 'bg-primary text-background hover:opacity-90'
+				? 'bg-primary text-background cursor-pointer hover:opacity-90'
 				: 'bg-muted text-muted-foreground'}"
 		>
 			Create Account
