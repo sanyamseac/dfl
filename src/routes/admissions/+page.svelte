@@ -50,7 +50,7 @@
 			structure: 'Online',
 			credits: '18',
 			image: 'https://images.unsplash.com/photo-1498050108023-c5249f4df085?w=400&h=250&fit=crop',
-			url: '/courses/mml-minor',
+			url: '/courses/mmlMinor',
 			applicationStart: '2025-07-14T00:00:00+05:30',
 			applicationEnd: '2025-08-04T23:59:59+05:30',
 		},

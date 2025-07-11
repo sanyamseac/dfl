@@ -2,27 +2,28 @@
 	import { onMount } from 'svelte'
 	import { ChevronLeft, ChevronRight } from 'lucide-svelte'
 	import { goto } from '$app/navigation'
+	import { Button } from 'bits-ui'
 
 	let currentSlide = 0
 	let autoPlayInterval: NodeJS.Timeout | undefined
 
 	const slides = [
 		{
-			image: 'https://dfl.iiit.ac.in/assets/img/slide/lab1.png',
+			image: 'lab1.png',
 			title: 'Welcome to Division of Flexible Learning',
 			subtitle: 'Empowering Education Through Innovation',
 			description:
 				'Discover cutting-edge research and flexible learning solutions at IIIT Hyderabad',
 		},
 		{
-			image: 'https://dfl.iiit.ac.in/assets/img/slide/at_a_glance1.png',
+			image: '/at_a_glance2.png',
 			title: 'Research Excellence',
 			subtitle: 'Advancing Knowledge and Technology',
 			description:
 				'Leading breakthrough research in computer science and information technology',
 		},
 		{
-			image: 'assets/img/slide/lab1.png',
+			image: '/at_a_glance1.png',
 			title: 'State-of-the-Art Facilities',
 			subtitle: 'Modern Labs and Learning Spaces',
 			description: 'Experience world-class infrastructure designed for innovative learning',
@@ -51,9 +52,7 @@
 	})
 </script>
 
-<!-- Hero Section -->
 <section id="hero" class="relative h-[90vh] overflow-hidden">
-	<!-- Background Images -->
 	{#each slides as slide, index}
 		<div
 			class="absolute inset-0 transition-opacity duration-1000 ease-in-out {currentSlide ===
@@ -124,11 +123,11 @@
 	</div>
 
 	<!-- Scroll Indicator -->
-	<div onclick={() => goto('/')} class="absolute right-8 bottom-8 animate-bounce">
+	<Button.Root onclick={() => goto('/admissions')} class="cursor-pointer absolute right-8 bottom-8 animate-bounce">
 		<div class="flex h-10 w-6 justify-center rounded-full border-2 border-white/50">
 			<div class="mt-2 h-3 w-1 animate-pulse rounded-full bg-white/70"></div>
 		</div>
-	</div>
+	</Button.Root>
 </section>
 
 <!-- About Section -->
@@ -151,7 +150,7 @@
 						class="shadow-card transform overflow-hidden rounded-2xl transition-transform duration-500 group-hover:scale-105"
 					>
 						<img
-							src="https://dfl.iiit.ac.in/assets/img/DigLib2.png"
+							src="/DigLib2.png"
 							alt="Research Laboratory"
 							class="h-64 w-full object-cover"
 						/>
@@ -166,7 +165,7 @@
 						class="shadow-card transform overflow-hidden rounded-2xl transition-transform duration-500 group-hover:scale-105"
 					>
 						<img
-							src="https://dfl.iiit.ac.in/assets/img/lab2.jpg"
+							src="/lab2.jpg"
 							alt="Digital Library"
 							class="h-64 w-full object-cover"
 						/>

@@ -54,7 +54,7 @@
 						</Button.Root>
 					{:else}
 						<Button.Root
-							onclick={() => goto('/courses/mml-minor/apply')}
+							onclick={() => goto('/courses/mmlMinor/apply')}
 							class="text-primary inline-flex cursor-pointer items-center justify-center rounded-lg bg-white px-8 py-4 text-lg font-semibold shadow-lg transition-all duration-200 hover:scale-105 hover:bg-white/95 hover:shadow-xl"
 						>
 							Apply Now

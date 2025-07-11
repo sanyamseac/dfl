@@ -1,8 +1,6 @@
-@import url('https://fonts.googleapis.com/css2?family=Quicksand:wght@300..700&display=swap');
 @import 'tailwindcss';
 @plugin '@tailwindcss/forms';
 @plugin '@tailwindcss/typography';
-/* @plugin '@tailwind-animate'; */
 
 @custom-variant dark (&:where(.dark, .dark *));
 

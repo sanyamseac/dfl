@@ -62,7 +62,7 @@
 		class="fixed bottom-6 left-1/2 z-50 -translate-x-1/2 transform transition-all duration-300"
 	>
 		<Button.Root
-			onclick={() => goto('/courses/mml-minor/apply')}
+			onclick={() => goto('/courses/mmlMinor/apply')}
 			class="bg-primary/80 hover:bg-primary inline-flex cursor-pointer items-center justify-center rounded-full px-8 py-4 font-semibold text-white shadow-xl backdrop-blur-lg transition-all duration-200 hover:scale-105"
 		>
 			Apply Now
