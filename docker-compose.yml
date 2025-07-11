@@ -27,7 +27,7 @@ services:
         ports:
             - 3000:3000
         volumes:
-            - ./pictures:/app/pictures
+            - ./content:/app/content
         networks:
             - app-network
 
