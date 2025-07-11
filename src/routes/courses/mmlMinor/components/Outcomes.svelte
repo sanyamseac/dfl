@@ -2,15 +2,14 @@
 	import { CheckCircle } from 'lucide-svelte'
 
 	const outcomes = [
-		'Develop a strong foundation in core machine learning concepts and techniques',
-		'Structured to reflect current industry trends and skills in demand',
+		'',
 		'Gain deep knowledge in emerging areas such as deep learning, and large language models',
-		'Apply learning through hands-on projects, coding exercises, and real-world case studies',
+		'',
 		'Research driven Pedagogy',
-		'Creates pathway to internships in premier research labs/institutions',
-		'Access exclusive IIIT-H campus events and learning experiences',
-		'Opportunity to pursue advanced certificate courses after completing the minor',
-		'Pathway to research at IIIT-H: Students who complete both the Minor and Advanced Certificate programs may be eligible to join IIIT Hyderabad as a researcher',
+		'',
+		'',
+		'',
+		'',
 	]
 </script>
 

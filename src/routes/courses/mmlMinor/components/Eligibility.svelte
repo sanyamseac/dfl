@@ -37,8 +37,7 @@
 					</div>
 				</div>
 				<p class="text-foreground-alt mt-6 text-sm">
-					Perfect for students eager to deepen their tech skills and unlock exciting
-					career opportunities
+					or any other related field with a strong foundation in mathematics and programming.
 				</p>
 			</div>
 		</div>

@@ -51,8 +51,8 @@ export const actions: Actions = {
 			return fail(400, { message: 'ID file must be a PDF' })
 
 		const extension = path.extname(profileImage.name).toLowerCase()
-		const imagePath = path.join('userPictures', `${user.id}${extension}`)
-		const idFilePath = path.join('userIdFiles', `${user.id}.pdf`)
+		const imagePath = path.join('content', 'userPictures', `${user.id}${extension}`)
+		const idFilePath = path.join('content', 'userIdFiles', `${user.id}.pdf`)
 		try {
 			await fs.mkdir(path.dirname(imagePath), { recursive: true })
 			await fs.mkdir(path.dirname(idFilePath), { recursive: true })
@@ -71,7 +71,7 @@ export const actions: Actions = {
 				gender,
 				idType,
 				idNumber,
-				imageUrl: `/userPictures/${user.id}${extension}`,
+				imageUrl: `/content/userPictures/${user.id}${extension}`,
 			})
 		} catch (err) {
 			logError(err as Error)

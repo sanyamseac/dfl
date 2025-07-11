@@ -42,7 +42,6 @@
 				<div class="flex flex-col gap-4 sm:flex-row">
 					{#if early}
 						<Button.Root
-							onclick={() => goto('/courses/mml-minor/apply')}
 							class="text-primary inline-flex items-center justify-center rounded-lg bg-white px-8 py-4 text-lg font-semibold shadow-lg transition-all duration-200 hover:scale-105 hover:bg-white/95 hover:shadow-xl"
 						>
 							Applications Open on 14th July
@@ -116,22 +115,34 @@
 						class="mx-auto mb-6 h-20 invert"
 					/>
 					<h3 class="mb-4 text-center text-xl font-semibold">Program Highlights</h3>
-					<ul class="space-y-3">
-						<li class="flex items-center">
-							<CheckCircle class="mr-3 h-5 w-5 text-green-300" />
-							Live interactive sessions with IIIT-H faculty
+					<ul class="space-y-4">
+						<li class="flex items-start">
+							<CheckCircle class="mr-3 mt-0.5 h-5 w-5 flex-shrink-0 text-green-300" />
+							<span class="text-sm leading-relaxed">Develop a strong foundation in core machine learning concepts and techniques</span>
 						</li>
-						<li class="flex items-center">
-							<CheckCircle class="mr-3 h-5 w-5 text-green-300" />
-							Hands-on projects and real-world applications
+						<li class="flex items-start">
+							<CheckCircle class="mr-3 mt-0.5 h-5 w-5 flex-shrink-0 text-green-300" />
+							<span class="text-sm leading-relaxed">Structured to reflect current industry trends and skills in demand</span>
 						</li>
-						<li class="flex items-center">
-							<CheckCircle class="mr-3 h-5 w-5 text-green-300" />
-							Access to exclusive campus events
+						<li class="flex items-start">
+							<CheckCircle class="mr-3 mt-0.5 h-5 w-5 flex-shrink-0 text-green-300" />
+							<span class="text-sm leading-relaxed">Apply learning through hands-on projects, coding exercises, and real-world case studies</span>
 						</li>
-						<li class="flex items-center">
-							<CheckCircle class="mr-3 h-5 w-5 text-green-300" />
-							Pathway to advanced research opportunities
+						<li class="flex items-start">
+							<CheckCircle class="mr-3 mt-0.5 h-5 w-5 flex-shrink-0 text-green-300" />
+							<span class="text-sm leading-relaxed">Creates pathway to internships in premier research labs/institutions</span>
+						</li>
+						<li class="flex items-start">
+							<CheckCircle class="mr-3 mt-0.5 h-5 w-5 flex-shrink-0 text-green-300" />
+							<span class="text-sm leading-relaxed">Access exclusive IIIT-H campus events and learning experiences</span>
+						</li>
+						<li class="flex items-start">
+							<CheckCircle class="mr-3 mt-0.5 h-5 w-5 flex-shrink-0 text-green-300" />
+							<span class="text-sm leading-relaxed">Opportunity to pursue advanced certificate courses after completing the minor</span>
+						</li>
+						<li class="flex items-start">
+							<CheckCircle class="mr-3 mt-0.5 h-5 w-5 flex-shrink-0 text-green-300" />
+							<span class="text-sm leading-relaxed">Chances to research at IIIT-H by completing both the Minor and Advanced Certificate programs</span>
 						</li>
 					</ul>
 				</div>

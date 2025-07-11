@@ -55,9 +55,41 @@ export const application = pgTable('application', {
 		.defaultNow(),
 	courseName: text('course_name').notNull(),
 	courseTable: text('course_table').notNull(),
+	paymentReference: text('payment_reference'),
+	paymentReceiptUrl: text('payment_receipt_url'),
+})
+
+export const mmlMinor = pgTable('mmlMinor', {
+	id: serial('id').primaryKey(),
+	applicationId: text('application_id')
+		.notNull()
+		.references(() => application.id),
+	institution: text('institution').notNull(),
+	major: text('major').notNull(),
+	discipline: text('discipline').notNull(),
+	semester: integer('semester').notNull(),
+	idNumber: text('id_number').notNull(),
+	idUrl: text('id_url').notNull(),
+	cgpa: text('cgpa').notNull(),
+	cgpaDocumentUrl: text('cgpa_document_url').notNull(),
+	expectedGradutionYear: integer('expected_gradution_year').notNull(),
+	SignatureUrl: text('signature_url').notNull(),
+})
+
+export const files = pgTable('files', {
+	id: serial('id').primaryKey(),
+	filePath: text('file_path').notNull(),
+	ownerId: text('owner_id')
+		.notNull()
+		.references(() => user.id),
+	createdAt: timestamp('created_at', { withTimezone: true, mode: 'date' })
+		.notNull()
+		.defaultNow(),
 })
 
 export type Session = typeof session.$inferSelect
 export type User = typeof user.$inferSelect
 export type Unverified = typeof unverified.$inferSelect
 export type Application = typeof application.$inferSelect
+export type UserDetails = typeof userDetails.$inferSelect
+export type MmlMinor = typeof mmlMinor.$inferSelect

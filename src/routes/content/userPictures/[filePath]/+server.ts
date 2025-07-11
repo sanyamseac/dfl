@@ -14,7 +14,7 @@ export const GET: RequestHandler = async (event) => {
 		throw error(403, 'Access denied')
 
 	try {
-		const picturePath = path.join('userPictures', filePath)
+		const picturePath = path.join('content', 'userPictures', filePath)
 		const fileBuffer = await readFile(picturePath)
 		const extension = filePath.split('.').pop()?.toLowerCase()
 		const contentType = getContentType(extension)
@@ -34,6 +34,7 @@ export const GET: RequestHandler = async (event) => {
 function getContentType(extension: string | undefined): string {
 	switch (extension) {
 		case 'jpg':
+			return 'image/jpeg'
 		case 'jpeg':
 			return 'image/jpeg'
 		case 'png':

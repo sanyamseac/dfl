@@ -14,7 +14,7 @@ export const GET: RequestHandler = async (event) => {
 		throw error(403, 'Access denied')
 
 	try {
-		const documentPath = path.join('userIdFiles', filePath)
+		const documentPath = path.join('content', 'userIdFiles', filePath)
 		const fileBuffer = await readFile(documentPath)
 		const extension = filePath.split('.').pop()?.toLowerCase()
 		const contentType = getContentType(extension)

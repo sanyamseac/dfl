@@ -5,7 +5,6 @@
 	import Curriculum from './components/Curriculum.svelte'
 	import Eligibility from './components/Eligibility.svelte'
 	import Features from './components/Features.svelte'
-	import Outcomes from './components/Outcomes.svelte'
 	import Pricing from './components/Pricing.svelte'
 	import Dates from './components/Dates.svelte'
 	import Faqs from './components/Faqs.svelte'
@@ -14,7 +13,7 @@
 	import { goto } from '$app/navigation'
 
 	let { data }: { data: PageServerData } = $props()
-	let startDate = new Date('2025-07-04T00:00:00+05:30')
+	let startDate = new Date('2025-07-14T00:00:00+05:30')
 	let endDate = new Date('2025-08-04T23:59:59+05:30')
 	let early = $state(Date.now() < startDate.getTime())
 	let late = $state(Date.now() > endDate.getTime())
@@ -46,13 +45,17 @@
 <Header {late} {early} />
 
 <Features />
-<Outcomes />
 <Curriculum />
 <Eligibility />
 <Pricing />
 <Dates />
 <Faqs />
 <Bottom {late} {early} />
+<div class="mx-auto max-w-4xl px-4 py-8 text-center">
+	<span class="text-center text-sm text-foreground-alt">
+		This Minor Program is a credit-bearing academic program offered by IIIT Hyderabad (DFL). The program leads to a Certificate of Completion. Recognition of this Minor by the student's home institution is subject to their internal academic policies or approval.
+	</span>
+</div>
 
 {#if showFloatingButton && !late && !early}
 	<div
